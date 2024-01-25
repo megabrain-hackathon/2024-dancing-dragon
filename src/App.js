@@ -24,11 +24,13 @@ export default class App extends React.Component{
   constructor(props) {
     super(props);
     this.state = {
+      textWidth: null,
+      textHeight: null,
       dragons: [],
       tabIndex: 1,
       background: {
-        width: 1000,
-        height: 1000,
+        width: 760,
+        height: 600,
         color: 'white',
         image: null,
         mode: 1, // 1: color, 2: image
@@ -102,7 +104,7 @@ export default class App extends React.Component{
             </div>
             
           </Col>
-          <Col style={{height: '50%', backgroundColor: 'yellow'}}>
+          <Col style={{height: '600px', width: '450px', backgroundColor: 'yellow',flex: 'none'}}>
             <Button onClick={() =>  this.setState({tabIndex: 1,background:{...this.state.background,ciIndex:1} })}>배경</Button>
             <Button onClick={() => this.setState({tabIndex: 2})}>드래곤</Button>
             <Button onClick={() => this.setState({tabIndex: 3})}>Music</Button>
@@ -142,10 +144,23 @@ export default class App extends React.Component{
         
         return (
           <div>
-            <Form.Control size="lg" type="text" placeholder="가로" onChange={(e) => this.setState({background: {...this.state.background,width:e.target.value}})}/>
+            {/* <Form.Control size="lg" type="text" placeholder="가로" onChange={(e) => this.setState({background: {...this.state.background,width:e.target.value > 760 ? 760 : e.target.value}})}/> */}
+            <Form.Control size="lg" type="text" placeholder="가로" value={this.state.textWidth} onChange={(e) => this.setState({textWidth: e.target.value})}/>
 
 
-            <Form.Control size="lg" type="text" placeholder="세로" onChange={(e) => this.setState({background: {...this.state.background,height:e.target.value}})}/>
+            {/* <Form.Control size="lg" type="text" placeholder="세로" onChange={(e) => this.setState({background: {...this.state.background,height:e.target.value > 600 ? 600 : e.target.value}})}/> */}
+            <Form.Control size="lg" type="text" placeholder="세로" value={this.state.textHeight} onChange={(e) => this.setState({textHeight: e.target.value})}/>
+            <div style={{position:'relative',top:10}}>
+            <Button style={{width:'100px',position: 'absolute', right: 0}}onClick={()=>{
+              
+              this.setState({
+                background: {...this.state.background,width:this.state.textWidth > 760 ? 760 : this.state.textWidth,
+                  height:this.state.textHeight > 600 ? 600 : this.state.textHeight},
+                textWidth: this.state.textWidth > 760 ? 760 : this.state.textWidth,
+                textHeight: this.state.textHeight > 600 ? 600 : this.state.textHeight,
+              })
+            }}>확인</Button>
+            </div><br/><br/>
 
 
             <Form.Check inline name='background' type='radio' defaultChecked={true} onClick={() =>this.setState({background:{...this.state.background,ciIndex:1}})} />
