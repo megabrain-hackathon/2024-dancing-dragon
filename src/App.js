@@ -20,18 +20,10 @@ import SpeedyToothless from './dragons/speedy-toothless.gif';
 import BackgroundMusic from './music/background.mp3';
 import {Stack} from "react-bootstrap";
 
-
-
-function getImageFiles(e) {
-  const files = e.currentTarget.files;
-  console.log(typeof files, files);
-}
-
 export default class App extends React.Component{
   constructor(props) {
     super(props);
     this.state = {
-      mode: 1,
       dragons: [],
       tabIndex: 1,
       background: {
@@ -46,11 +38,11 @@ export default class App extends React.Component{
         ciIndex:1,
       }
     }
-  }
+  
   
   render() {
-    const {dragons, background, backgroundMusic, previewImages } = this.state;
-    const editPanel = this.getEditPanel(this.state.mode);
+    const {dragons, background, backgroundMusic } = this.state;
+    const editPanel = this.getEditPanel(this.state.tabIndex);
     return (
       <Container className='App' style={{width: '100%'}}>
         {dragons.length > 0 && <audio src={backgroundMusic} controls autoPlay loop hidden/>
@@ -123,11 +115,11 @@ export default class App extends React.Component{
   }
   
   getEditPanel(id) {
-    
+    console.log(id);
     switch (id) {
       case 1:
         const {ciIndex} = this.state.background;
-        // TODO: mode에 따라 색상 입력 혹은 이미지 입력
+        
         let backgroundContent;
         if (ciIndex === 1) {
           backgroundContent = (
@@ -159,7 +151,7 @@ export default class App extends React.Component{
             <Form.Check inline name='background' type='radio' defaultChecked={true} onClick={() =>this.setState({background:{...this.state.background,ciIndex:1}})} />
 
 
-            <Form.Check inline name='background' type='radio'onClick={() =>this.setState({background:{...this.state.background,ciIndex:2}})}/>
+            <Form.Check inline name='background' type='radio' onClick={() =>this.setState({background:{...this.state.background,ciIndex:2}})}/>
             {backgroundContent}
           </div>
         )
