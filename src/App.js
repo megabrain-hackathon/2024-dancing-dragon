@@ -7,14 +7,18 @@ import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 
+// dragons
 import Toothless from './dragons/toothless.gif';
+import LightFury from './dragons/light-fury.gif';
+import AngryToothless from './dragons/angry-toothless.gif';
+import BabyToothless from './dragons/baby-toothless.gif';
+import ListeningToothless from './dragons/listening-toothless.gif';
+import Toothless2 from './dragons/toothless2.gif';
+import MouseToothless from './dragons/mouse-toothless.gif';
+import SpeedyToothless from './dragons/speedy-toothless.gif';
 
-
-
-function getImageFiles(e) {
-  const files = e.currentTarget.files;
-  console.log(typeof files, files);
-}
+import BackgroundMusic from './music/background.mp3';
+import {Stack} from "react-bootstrap";
 
 export default class App extends React.Component{
   constructor(props) {
@@ -22,95 +26,70 @@ export default class App extends React.Component{
     this.state = {
       textWidth: null,
       textHeight: null,
+      dragons: [],
       tabIndex: 1,
-      //
-      dragons: [
-        {
-          height: 100,
-          width: 100,
-          x: 100,
-          y: 100,
-          degree: 10,
-        },
-        {
-          height: 100,
-          width: 100,
-          x: 120,
-          y: 120,
-          degree: 20,
-        },
-        {
-          height: 100,
-          width: 100,
-          x: 140,
-          y: 140,
-          degree: 30,
-        },
-        {
-          height: 100,
-          width: 100,
-          x: 160,
-          y: 160,
-          degree: 40,
-        },
-
-        {
-          height: 100,
-          width: 100,
-          x: 600,
-          y: 100,
-          degree: 40,
-        },
-        {
-          height: 100,
-          width: 100,
-          x: 580,
-          y: 120,
-          degree: 30,
-        },
-        {
-          height: 100,
-          width: 100,
-          x: 560,
-          y: 140,
-          degree: 20,
-        },
-        {
-          height: 100,
-          width: 100,
-          x: 540,
-          y: 160,
-          degree: 10,
-        },
-      ],
       background: {
         width: 760,
         height: 600,
         color: 'white',
         image: null,
         mode: 1, // 1: color, 2: image
+      },
+      handlingDragon: null,
+      backgroundMusic: BackgroundMusic,
         ciIndex:1,
       }
     }
-  }
+  
   
   render() {
-    const {dragons, background,previewImages } = this.state;
+    const {dragons, background, backgroundMusic } = this.state;
     const editPanel = this.getEditPanel(this.state.tabIndex);
     return (
-      <Container className='App' style={{width:'1260px'}}>
-        <Row>
-          <Col style={{ height:'600px', width:'760px', backgroundColor: 'white'}}>
-            <div className='gif-container' id='background' style={{
+      <Container className='App' style={{width: '100%'}}>
+        {dragons.length > 0 && <audio src={backgroundMusic} controls autoPlay loop hidden/>
+        }
+        <Row style={{width: '100%'}}>
+          <Col style={{ width:'50%', backgroundColor: 'white'}}>
+            <div id='background' style={{
               width: `${background.width}px`,
               height: `${background.height}px`,
               backgroundColor: background.mode === 1 ? background.color : null,
               backgroundImage: background.mode === 2 ? background.image : null,
-              }}>
+              }}
+                 onDragOver={(e) => {
+                    e.preventDefault();
+                 }}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  console.log(e);
+                  
+                  const {handlingDragon} = this.state;
+                  console.log('dragon:',handlingDragon.target.src)
+                  const { pageX, pageY } = e;
+                  const { x, y } = e.target.getBoundingClientRect();
+                  const width = 100;
+                  const height = 100;
+                  const newDragon = {
+                    src: handlingDragon.target.src,
+                    name: handlingDragon.target.alt,
+                    height: height,
+                    width: width,
+                    x: pageX - x - width/2,
+                    y: pageY - y - height/2,
+                    degree: 0,
+                    zIndex: this.state.dragons.length+1,
+                  }
+                  this.setState({
+                    dragons: [...dragons, newDragon],
+                    handlingDragon: null,
+                  })
+                }}
+            >
               {
                 dragons.map((dragon, index) => {
                   return (
-                    <img src={Toothless} alt={'toothless'} style={{
+                    <img src={dragon.src} alt={dragon.name} style={{
                       height: dragon.height,
                       width: dragon.width,
                       transform: `rotate(${dragon.degree}deg)`,
@@ -138,11 +117,11 @@ export default class App extends React.Component{
   }
   
   getEditPanel(id) {
-    
+    console.log(id);
     switch (id) {
       case 1:
         const {ciIndex} = this.state.background;
-        // TODO: mode에 따라 색상 입력 혹은 이미지 입력
+        
         let backgroundContent;
         if (ciIndex === 1) {
           backgroundContent = (
@@ -157,7 +136,7 @@ export default class App extends React.Component{
           )
         } else if(ciIndex ===2 ) {
           backgroundContent= (
-            <input type="file" class="real-upload" accept="image/*" required multiple>
+            <input type="file" className="real-upload" accept="image/*" required multiple>
               
               </input>
           )
@@ -187,26 +166,52 @@ export default class App extends React.Component{
             <Form.Check inline name='background' type='radio' defaultChecked={true} onClick={() =>this.setState({background:{...this.state.background,ciIndex:1}})} />
 
 
-            <Form.Check inline name='background' type='radio'onClick={() =>this.setState({background:{...this.state.background,ciIndex:2}})}/>
+            <Form.Check inline name='background' type='radio' onClick={() =>this.setState({background:{...this.state.background,ciIndex:2}})}/>
             {backgroundContent}
           </div>
         )
       case 2:
         return (
-          <div>
-            드래곤
-          </div>
+          <Stack direction='horizontal' className='dragon-list-box'>
+            <img src={Toothless} alt={'toothless'} onDragStart={(e) => {this.setState({handlingDragon: e})}}/>
+            <img src={LightFury} alt={'light-fury'} onDragStart={(e) => {this.setState({handlingDragon: e})}}/>
+            <img src={AngryToothless} alt={'angry-toothless'} onDragStart={(e) => {this.setState({handlingDragon: e})}}/>
+            <img src={BabyToothless} alt={'baby-toothless'} onDragStart={(e) => {this.setState({handlingDragon: e})}}/>
+            <img src={ListeningToothless} alt={'listening-toothless'} onDragStart={(e) => {this.setState({handlingDragon: e})}}/>
+            <img src={Toothless2} alt={'toothless2'} onDragStart={(e) => {this.setState({handlingDragon: e})}}/>
+            <img src={MouseToothless} alt={'mouse-toothless'} onDragStart={(e) => {this.setState({handlingDragon: e})}}/>
+            <img src={SpeedyToothless} alt={'speedy-toothless'} onDragStart={(e) => {this.setState({handlingDragon: e})}}/>
+          </Stack>
         )
       case 3:
         return (
           <div>
-            Music
+            <p>Music</p>
+            <input
+              type='file'
+              accept='audio/*'
+              name='audio_file'
+              onChange={(e) => {
+                const selectedAudio = e.target.files[0];
+                
+                if (selectedAudio) {
+                  const reader = new FileReader();
+                  reader.onload = () => {
+                    const previewAudioUrl = reader.result;
+                    console.log(previewAudioUrl);
+                    this.setState({ backgroundMusic: previewAudioUrl });
+                  };
+                  
+                  reader.readAsDataURL(selectedAudio);
+                }
+              }}
+            />
           </div>
         )
       case 4:
         return (
           <div>
-            BGM
+            다운로드
           </div>
         )
       default:

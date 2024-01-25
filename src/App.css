@@ -35,3 +35,17 @@
     transform: rotate(360deg);
   }
 }
+
+.dragon-list-box {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.dragon-list-box > img {
+  width: 200px;
+  height: 200px;
+  margin: 10px;
+}
