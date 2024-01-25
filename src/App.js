@@ -104,7 +104,7 @@ export default class App extends React.Component{
             </div>
             
           </Col>
-          <Col style={{height: '600px', width: '450px', backgroundColor: 'yellow',flex: 'none'}}>
+          <Col style={{ width: '400px', backgroundColor: 'yellow'}}>
             <Button onClick={() =>  this.setState({tabIndex: 1,background:{...this.state.background,ciIndex:1} })}>배경</Button>
             <Button onClick={() => this.setState({tabIndex: 2})}>드래곤</Button>
             <Button onClick={() => this.setState({tabIndex: 3})}>Music</Button>
@@ -152,12 +152,26 @@ export default class App extends React.Component{
             <Form.Control size="lg" type="text" placeholder="세로" value={this.state.textHeight} onChange={(e) => this.setState({textHeight: e.target.value})}/>
             <div style={{position:'relative',top:10}}>
             <Button style={{width:'100px',position: 'absolute', right: 0}}onClick={()=>{
-              
+              const { textWidth, textHeight, dragons } = this.state;
+    
+              const newDragons = dragons.filter((dragon) => {
+                const x = dragon.x;
+                const y = dragon.y;
+                const endX = this.state.textWidth > 600 ? 600 : this.state.textWidth;
+                const endY = this.state.textHeight > 750 ? 750 : this.state.textHeight;
+          
+                if (x >= 80 && x + dragon.width <= endX+100 && y >= 0 && y + dragon.height <= endY) {
+                  return true; 
+                }
+                return false;
+              });
+
               this.setState({
-                background: {...this.state.background,width:this.state.textWidth > 760 ? 760 : this.state.textWidth,
-                  height:this.state.textHeight > 600 ? 600 : this.state.textHeight},
-                textWidth: this.state.textWidth > 760 ? 760 : this.state.textWidth,
-                textHeight: this.state.textHeight > 600 ? 600 : this.state.textHeight,
+                dragons: newDragons,
+                background: {...this.state.background,width:this.state.textWidth > 600 ? 600 : this.state.textWidth,
+                  height:this.state.textHeight > 750 ? 750 : this.state.textHeight},
+                textWidth: this.state.textWidth > 600 ? 600 : this.state.textWidth,
+                textHeight: this.state.textHeight > 750 ? 750 : this.state.textHeight,
               })
             }}>확인</Button>
             </div><br/><br/>
