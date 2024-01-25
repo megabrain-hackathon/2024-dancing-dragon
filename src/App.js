@@ -9,11 +9,19 @@ import Form from 'react-bootstrap/Form';
 
 import Toothless from './dragons/toothless.gif';
 
+
+
+function getImageFiles(e) {
+  const files = e.currentTarget.files;
+  console.log(typeof files, files);
+}
+
 export default class App extends React.Component{
   constructor(props) {
     super(props);
     this.state = {
-      mode: 1,
+      tabIndex: 1,
+      //
       dragons: [
         {
           height: 100,
@@ -79,20 +87,21 @@ export default class App extends React.Component{
         color: 'white',
         image: null,
         mode: 1, // 1: color, 2: image
+        ciIndex:1,
       }
     }
   }
   
   render() {
-    const {dragons, background } = this.state;
-    const editPanel = this.getEditPanel(this.state.mode);
+    const {dragons, background,previewImages } = this.state;
+    const editPanel = this.getEditPanel(this.state.tabIndex);
     return (
       <Container className='App' style={{width: '100%'}}>
         <Row style={{width: '100%'}}>
           <Col style={{ height:'600px', backgroundColor: 'white'}}>
             <div id='background' style={{
               width: `${background.width}px`,
-              height: `${background.height}px`,
+              height: `${background.height}px`  ,
               backgroundColor: background.mode === 1 ? background.color : null,
               backgroundImage: background.mode === 2 ? background.image : null,
               }}>
@@ -115,10 +124,10 @@ export default class App extends React.Component{
             
           </Col>
           <Col style={{height: '600px', backgroundColor: 'yellow'}}>
-            <Button onClick={() => this.setState({mode: 1})}>배경</Button>
-            <Button onClick={() => this.setState({mode: 2})}>드래곤</Button>
-            <Button onClick={() => this.setState({mode: 3})}>Music</Button>
-            <Button onClick={() => this.setState({mode: 4})}>저장</Button>
+            <Button onClick={() =>  this.setState({tabIndex: 1,background:{...this.state.background,ciIndex:1} })}>배경</Button>
+            <Button onClick={() => this.setState({tabIndex: 2})}>드래곤</Button>
+            <Button onClick={() => this.setState({tabIndex: 3})}>Music</Button>
+            <Button onClick={() => this.setState({tabIndex: 4})}>저장</Button>
             {editPanel}
           </Col>
         </Row>
@@ -130,15 +139,11 @@ export default class App extends React.Component{
     
     switch (id) {
       case 1:
-        const {mode} = this.state.background;
+        const {ciIndex} = this.state.background;
         // TODO: mode에 따라 색상 입력 혹은 이미지 입력
-        
-        return (
-          <div>
-            <Form.Control size="lg" type="text" placeholder="가로" />
-            <Form.Control size="lg" type="text" placeholder="세로" />
-            <Form.Check inline name='background' type='radio'/>
-            <Form.Check inline name='background' type='radio'/>
+        let backgroundContent;
+        if (ciIndex === 1) {
+          backgroundContent = (
             <Form.Control
               type="color"
               id="exampleColorInput"
@@ -147,6 +152,28 @@ export default class App extends React.Component{
               size="lg"
               onChange={(e) => this.setState({background: {...this.state.background, color: e.target.value}})}
             />
+          )
+        } else if(ciIndex ===2 ) {
+          backgroundContent= (
+            <input type="file" class="real-upload" accept="image/*" required multiple>
+              
+              </input>
+          )
+        }
+        
+        return (
+          <div>
+            <Form.Control size="lg" type="text" placeholder="가로" onChange={(e) => this.setState({background: {...this.state.background,width:e.target.value}})}/>
+
+
+            <Form.Control size="lg" type="text" placeholder="세로" onChange={(e) => this.setState({background: {...this.state.background,height:e.target.value}})}/>
+
+
+            <Form.Check inline name='background' type='radio' defaultChecked={true} onClick={() =>this.setState({background:{...this.state.background,ciIndex:1}})} />
+
+
+            <Form.Check inline name='background' type='radio'onClick={() =>this.setState({background:{...this.state.background,ciIndex:2}})}/>
+            {backgroundContent}
           </div>
         )
       case 2:
