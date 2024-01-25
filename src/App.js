@@ -20,12 +20,20 @@ import SpeedyToothless from './dragons/speedy-toothless.gif';
 import BackgroundMusic from './music/background.mp3';
 import {Stack} from "react-bootstrap";
 
+
+
+function getImageFiles(e) {
+  const files = e.currentTarget.files;
+  console.log(typeof files, files);
+}
+
 export default class App extends React.Component{
   constructor(props) {
     super(props);
     this.state = {
       mode: 1,
       dragons: [],
+      tabIndex: 1,
       background: {
         width: 1000,
         height: 1000,
@@ -35,11 +43,13 @@ export default class App extends React.Component{
       },
       handlingDragon: null,
       backgroundMusic: BackgroundMusic,
+        ciIndex:1,
+      }
     }
   }
   
   render() {
-    const {dragons, background, backgroundMusic } = this.state;
+    const {dragons, background, backgroundMusic, previewImages } = this.state;
     const editPanel = this.getEditPanel(this.state.mode);
     return (
       <Container className='App' style={{width: '100%'}}>
@@ -100,11 +110,11 @@ export default class App extends React.Component{
             </div>
             
           </Col>
-          <Col style={{width: '50%', backgroundColor: 'yellow'}}>
-            <Button onClick={() => this.setState({mode: 1})}>배경</Button>
-            <Button onClick={() => this.setState({mode: 2})}>드래곤</Button>
-            <Button onClick={() => this.setState({mode: 3})}>Music</Button>
-            <Button onClick={() => this.setState({mode: 4})}>저장</Button>
+          <Col style={{height: '50%', backgroundColor: 'yellow'}}>
+            <Button onClick={() =>  this.setState({tabIndex: 1,background:{...this.state.background,ciIndex:1} })}>배경</Button>
+            <Button onClick={() => this.setState({tabIndex: 2})}>드래곤</Button>
+            <Button onClick={() => this.setState({tabIndex: 3})}>Music</Button>
+            <Button onClick={() => this.setState({tabIndex: 4})}>저장</Button>
             {editPanel}
           </Col>
         </Row>
@@ -116,14 +126,11 @@ export default class App extends React.Component{
     
     switch (id) {
       case 1:
-        const {mode} = this.state.background;
-        
-        return (
-          <div>
-            <Form.Control size="lg" type="text" placeholder="가로"/>
-            <Form.Control size="lg" type="text" placeholder="세로"/>
-            <Form.Check inline name='background' type='radio'/>
-            <Form.Check inline name='background' type='radio'/>
+        const {ciIndex} = this.state.background;
+        // TODO: mode에 따라 색상 입력 혹은 이미지 입력
+        let backgroundContent;
+        if (ciIndex === 1) {
+          backgroundContent = (
             <Form.Control
               type="color"
               id="exampleColorInput"
@@ -132,6 +139,28 @@ export default class App extends React.Component{
               size="lg"
               onChange={(e) => this.setState({background: {...this.state.background, color: e.target.value}})}
             />
+          )
+        } else if(ciIndex ===2 ) {
+          backgroundContent= (
+            <input type="file" className="real-upload" accept="image/*" required multiple>
+              
+              </input>
+          )
+        }
+        
+        return (
+          <div>
+            <Form.Control size="lg" type="text" placeholder="가로" onChange={(e) => this.setState({background: {...this.state.background,width:e.target.value}})}/>
+
+
+            <Form.Control size="lg" type="text" placeholder="세로" onChange={(e) => this.setState({background: {...this.state.background,height:e.target.value}})}/>
+
+
+            <Form.Check inline name='background' type='radio' defaultChecked={true} onClick={() =>this.setState({background:{...this.state.background,ciIndex:1}})} />
+
+
+            <Form.Check inline name='background' type='radio'onClick={() =>this.setState({background:{...this.state.background,ciIndex:2}})}/>
+            {backgroundContent}
           </div>
         )
       case 2:
